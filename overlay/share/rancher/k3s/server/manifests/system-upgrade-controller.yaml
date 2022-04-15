@@ -65,14 +65,20 @@ spec:
                   - { key: node-role.kubernetes.io/master, operator: Exists }
       serviceAccountName: k3os-upgrade
       tolerations:
-        - key: "CriticalAddonsOnly"
-          operator: "Exists"
-        - key: "node-role.kubernetes.io/master"
-          operator: "Exists"
-          effect: "NoSchedule"
-        - key: "node-role.kubernetes.io/control-plane"
-          operator: "Exists"
-          effect: "NoSchedule"
+        - key: CriticalAddonsOnly
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/controlplane
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
+        - effect: NoExecute
+          key: node-role.kubernetes.io/etcd
+          operator: Exists
       containers:
         - name: system-upgrade-controller
           image: rancher/system-upgrade-controller:v0.9.1
@@ -89,15 +95,27 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-          volumeMounts:
-            - name: etc-ssl
-              mountPath: /etc/ssl
-            - name: tmp
-              mountPath: /tmp
+        volumeMounts:
+          - mountPath: /etc/ssl
+            name: etc-ssl
+          - mountPath: /etc/pki
+            name: etc-pki
+          - mountPath: /etc/ca-certificates
+            name: etc-ca-certificates
+          - mountPath: /tmp
+            name: tmp
       volumes:
-        - name: etc-ssl
-          hostPath:
+        - hostPath:
             path: /etc/ssl
             type: Directory
-        - name: tmp
-          emptyDir: {}
+          name: etc-ssl
+        - hostPath:
+            path: /etc/pki
+            type: DirectoryOrCreate
+          name: etc-pki
+        - hostPath:
+            path: /etc/ca-certificates
+            type: DirectoryOrCreate
+          name: etc-ca-certificates
+        - emptyDir: {}
+          name: tmp
