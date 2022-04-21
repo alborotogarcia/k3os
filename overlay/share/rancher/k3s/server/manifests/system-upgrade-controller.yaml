@@ -95,15 +95,15 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
-        volumeMounts:
-          - mountPath: /etc/ssl
-            name: etc-ssl
-          - mountPath: /etc/pki
-            name: etc-pki
-          - mountPath: /etc/ca-certificates
-            name: etc-ca-certificates
-          - mountPath: /tmp
-            name: tmp
+          volumeMounts:
+            - mountPath: /etc/ssl
+              name: etc-ssl
+            - mountPath: /etc/pki
+              name: etc-pki
+            - mountPath: /etc/ca-certificates
+              name: etc-ca-certificates
+            - mountPath: /tmp
+              name: tmp
       volumes:
         - hostPath:
             path: /etc/ssl
